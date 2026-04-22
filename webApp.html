@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dino Game</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: linear-gradient(to right, #4CAF50, #81C784)
+    }
+
+    .container {
+        margin-top: 100px;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        display: inline-block;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    #word {
+        font-size: 28px;
+        margin: 20px 0;
+        font-weight: bold;
+    }
+
+    button {
+        padding: 10px 20px;
+        margin: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+    }
+
+    .real {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .fake {
+        background-color: #f44336;
+        color: white;
+    }
+
+    #score, #streak {
+        margin-top: 10px;
+        font-size: 18px;
+    }
+
+    nav {
+        margin-bottom: 20px;
+    }
+
+    nav a {
+        text-decoration: none;
+        margin: 0 10px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    nav a:hover {
+        color: #4CAF50;
+    }
+
+    #timer {
+        font-size: 20px;
+        margin-bottom: 10px;
+        transition: color 0.3s;
+    }
+
+    .danger {
+        color: red;
+    }
+
+    #feedback {
+        margin-top: 15px;
+        font-size: 18px;
+        height: 24px;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+    <nav>
+        <a href="index.html">Back to Home</a>
+        <a href="fromScratch.html">Back to Dinosaur Page</a>
+    </nav>
+
+<div class="container">
+    <h1>Real or Fake Dinosaur?</h1>
+
+    <!-- FIX 1: timer moved inside the container -->
+    <div id="timer">Time: 10</div>
+
+    <div id="word">Loading...</div>
+
+    <button class="real" onclick="checkAnswer(true)">Real</button>
+    <button class="fake" onclick="checkAnswer(false)">Fake</button>
+
+    <div id="score">Score: 0</div>
+    <!-- FIX 2: streak element added -->
+    <div id="streak">Streak: 0</div>
+    <div id="feedback"></div>
+</div>
+
+<script>
+let timeLeft = 10;
+let timer;
+
+const realDinos = [
+    "Tyrannosaurus", "Triceratops", "Velociraptor",
+    "Stegosaurus", "Brachiosaurus", "Spinosaurus",
+    "Ankylosaurus", "Allosaurus", "Iguanodon",
+    "Parasaurolophus"
+];
+
+const fakeDinos = [
+    "Tounasaurus", "Hotaraptor", "Gurtodon",
+    "Jixelodon", "Pauranalosaurus", "Gereceratops",
+    "Dracoterix", "Gribblenator", "Habiasaurus",
+    "Hexatops"
+];
+
+let currentIsReal;
+let score = 0;
+let streak = 0;
+
+function getRandomItem(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function startTimer() {
+    clearInterval(timer);
+
+    timeLeft = 10;
+    const timerEl = document.getElementById("timer");
+
+    timerEl.textContent = "Time: " + timeLeft;
+    timerEl.classList.remove("danger");
+
+    timer = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = "Time: " + timeLeft;
+
+        if (timeLeft <= 3) {
+            timerEl.classList.add("danger");
+        }
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            showFeedback("⏰ Time's up!", false);
+            setTimeout(newRound, 800);
+        }
+    }, 1000);
+}
+
+function newRound() {
+    clearInterval(timer);
+    startTimer();
+
+    const useReal = Math.random() < 0.5;
+    currentIsReal = useReal;
+
+    document.getElementById("word").textContent =
+        useReal ? getRandomItem(realDinos) : getRandomItem(fakeDinos);
+}
+
+function showFeedback(message, isCorrect) {
+    const el = document.getElementById("feedback");
+
+    el.textContent = message;
+    el.style.color = isCorrect ? "green" : "red";
+
+    setTimeout(() => {
+        el.textContent = "";
+    }, 1000);
+}
+
+function checkAnswer(userChoice) {
+    clearInterval(timer);
+
+    if (userChoice === currentIsReal) {
+        score++;
+        streak++;
+        showFeedback("✅ Correct!", true);
+    } else {
+        streak = 0;
+        showFeedback("❌ Wrong!", false);
+    }
+
+    document.getElementById("score").textContent = "Score: " + score;
+    document.getElementById("streak").textContent = "Streak: " + streak;
+
+    if (score >= 10) {
+        showFeedback("🦖 Dino Expert!", true);
+        score = 0;
+        streak = 0;
+
+        document.getElementById("score").textContent = "Score: 0";
+        document.getElementById("streak").textContent = "Streak: 0";
+    }
+
+    setTimeout(newRound, 800);
+}
+
+newRound();
+</script>
+
+</body>
+</html>
