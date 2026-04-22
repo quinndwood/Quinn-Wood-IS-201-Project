@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,12 +82,12 @@
         color: red;
     }
 
-    #feedback {
-        margin-top: 15px;
-        font-size: 18px;
-        height: 24px;
-        font-weight: bold;
-    }
+ #feedback {
+    margin-top: 15px;
+    font-size: 18px;
+    height: 60px; /* increased from 24px */
+    font-weight: bold;
+}
 </style>
 </head>
 
@@ -95,22 +97,18 @@
         <a href="fromScratch.html">Back to Dinosaur Page</a>
     </nav>
 
-<div class="container">
-    <h1>Real or Fake Dinosaur?</h1>
+    <div class="container">
+        <h1>Real or Fake Dinosaur?</h1>
+        <div id="timer">Time: 10</div>
+        <div id="word">Loading...</div>
 
-    <!-- FIX 1: timer moved inside the container -->
-    <div id="timer">Time: 10</div>
+        <button class="real" onclick="checkAnswer(true)">Real</button>
+        <button class="fake" onclick="checkAnswer(false)">Fake</button>
 
-    <div id="word">Loading...</div>
-
-    <button class="real" onclick="checkAnswer(true)">Real</button>
-    <button class="fake" onclick="checkAnswer(false)">Fake</button>
-
-    <div id="score">Score: 0</div>
-    <!-- FIX 2: streak element added -->
-    <div id="streak">Streak: 0</div>
-    <div id="feedback"></div>
-</div>
+        <div id="score">Score: 0</div>
+        <div id="streak">Streak: 0</div>
+        <div id="feedback"></div>
+    </div>
 
 <script>
 let timeLeft = 10;
@@ -129,6 +127,19 @@ const fakeDinos = [
     "Dracoterix", "Gribblenator", "Habiasaurus",
     "Hexatops"
 ];
+
+const dinoFacts = {
+    "Tyrannosaurus": "T. Rex had the strongest bite force of any land animal ever — strong enough to crush bone!",
+    "Triceratops": "Triceratops had up to 800 teeth, constantly replacing old ones throughout its life.",
+    "Velociraptor": "Real Velociraptors were only about the size of a turkey — much smaller than in Jurassic Park!",
+    "Stegosaurus": "Stegosaurus had a brain the size of a walnut, tiny for its massive body.",
+    "Brachiosaurus": "Brachiosaurus could reach food 9 meters off the ground — like a living crane.",
+    "Spinosaurus": "Spinosaurus is the largest carnivorous dinosaur ever found, even bigger than T. Rex.",
+    "Ankylosaurus": "Ankylosaurus had a tail club so powerful it could shatter bone.",
+    "Allosaurus": "Allosaurus was the top predator of the Jurassic period, 150 million years ago.",
+    "Iguanodon": "Iguanodon was one of the first dinosaurs ever to be officially named, back in 1825.",
+    "Parasaurolophus": "Parasaurolophus used its hollow head crest like a musical instrument to make calls."
+};
 
 let currentIsReal;
 let score = 0;
@@ -158,7 +169,7 @@ function startTimer() {
         if (timeLeft <= 0) {
             clearInterval(timer);
             showFeedback("⏰ Time's up!", false);
-            setTimeout(newRound, 800);
+            setTimeout(newRound, 2500);
         }
     }, 1000);
 }
@@ -176,13 +187,20 @@ function newRound() {
 
 function showFeedback(message, isCorrect) {
     const el = document.getElementById("feedback");
+    const currentWord = document.getElementById("word").textContent;
 
-    el.textContent = message;
+    let display = message;
+
+    if (currentIsReal && dinoFacts[currentWord]) {
+        display += "<br><small>🦕 Did you know? " + dinoFacts[currentWord] + "</small>";
+    }
+
+    el.innerHTML = display;
     el.style.color = isCorrect ? "green" : "red";
 
     setTimeout(() => {
-        el.textContent = "";
-    }, 1000);
+        el.innerHTML = "";
+    }, 2500);
 }
 
 function checkAnswer(userChoice) {
@@ -204,12 +222,11 @@ function checkAnswer(userChoice) {
         showFeedback("🦖 Dino Expert!", true);
         score = 0;
         streak = 0;
-
         document.getElementById("score").textContent = "Score: 0";
         document.getElementById("streak").textContent = "Streak: 0";
     }
 
-    setTimeout(newRound, 800);
+    setTimeout(newRound, 2500);
 }
 
 newRound();
